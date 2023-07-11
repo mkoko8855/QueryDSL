@@ -11,10 +11,10 @@ import java.util.List;
 @ToString(exclude = "members")
 @EqualsAndHashCode
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Table(name="tbl_team")
+@Table(name = "tbl_team")
 public class Team {
 
     @Id
@@ -26,4 +26,5 @@ public class Team {
 
     @OneToMany(mappedBy = "team")
     private List<Member> members = new ArrayList<>();
+
 }

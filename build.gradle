@@ -52,11 +52,6 @@ dependencies {
 
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
-}
-
-
 //querydsl 추가 시작
 //querydsl은 메서드를 이용해서 조립하잖아.
 //즉, 내부적으로 엔터티클래스를 인식해서 그와 비슷한 모양의 QClass를 제작한다.
@@ -77,3 +72,13 @@ compileQuerydsl {
 	options.annotationProcessorPath = configurations.querydsl
 }
 //querydsl 추가 끝
+
+
+
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+
+
