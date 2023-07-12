@@ -9,6 +9,9 @@ public interface MemberRepositoryCustom {
 
     List<Member> findByName(String name);
 
+    //0712
+    List<Member> findUser(String nameParam, Integer ageParam);
+
 
 
 

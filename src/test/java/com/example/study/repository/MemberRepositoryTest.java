@@ -4,6 +4,7 @@ import com.example.study.entity.Member;
 import com.example.study.entity.QMember;
 import com.example.study.entity.Team;
 import com.querydsl.core.Tuple;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.assertj.core.api.Assertions;
@@ -403,9 +404,90 @@ class MemberRepositoryTest {
         //then
         result.forEach(tuple -> System.out.println("tuple = " + tuple));
 
-
-
     }
+
+
+
+
+    //0712
+    @Test
+    @DisplayName("sub query 사용하기(나이가 가장 많은 회원 조회)")
+    void subQueryTest() {
+        //given
+        QMember memberSub = new QMember("subMember"); //-> 같은 테이블에서 서브쿼리를 적용하려면 별도로 QClass의 객체를 생성해야 한다.
+        //when
+        List<Member> result = factory.selectFrom(member)
+                .where(member.age.eq( //eq괄호안엔 age의 max값이 들어가야 서브쿼리 완성이 된다.
+                        JPAExpressions//서브쿼리를 사용할 수 있게 해주는 클래스
+                                .select(memberSub.age.max()) //이 select절에 사용할 서브쿼리절은 따로만들어주자. given으로가자
+                                .from(memberSub)
+                )).fetch();//패치로 줬으니 리스트로오겠지 알트엔터로 지역변수GO
+        //then
+        System.out.println("\n\n\n");
+        result.forEach(System.out::println); //리스트에 있는 내부 객체의 것들을 보자~
+        System.out.println("\n\n\n");
+    }
+
+
+
+
+//참고로 JPAExperssions는 from절을 제외하고 select절과 where절에서 사용이 가능하다.
+
+
+
+
+    //0712
+    @Test
+    @DisplayName("나이가 평균 나이 이상인 회원을 조회해보자")
+    void subQueryGoe() {
+        //given
+        QMember m2 = new QMember("m2");
+        //when
+        List<Member> result = factory.selectFrom(member)
+                .where(member.age.goe( //초과는 gt겠지. 적다면 loe겠지. goe 괄호 안에는 서브쿼리사용해야하니 JPAExpreessions쓰자
+                        JPAExpressions
+                                .select(m2.age.avg())
+                                .from(m2)
+                )).fetch();
+
+        //then
+        assertEquals(result.size(), 5); //5명 조회가 되는게 맞니!
+    }
+
+
+
+    
+    
+    //0712
+    @Test
+    @DisplayName("동적 sql 테스트")
+    void dynamicQueryTest() {
+        //given
+        String name = "member1"; //여기가 "member1"가 아니고 null이고 int age =60 으로 설정이 된다면 ,eq(name)은 null이고 where절에서 널이 나오는거니 검색 대상에서 제외된다고 할 수 있겠다!
+        int age = 10;
+        //when
+        List<Member> result = memberRepository.findUser(name, age);
+        //then
+        assertEquals(result.size(), 1);
+
+        System.out.println("\n\n\n");
+        result.forEach((System.out::println));
+        System.out.println("\n\n\n");
+    }
+
+
+
+    
+    
+    
+    
+    
+
+
+
+
+
+
 
 
 }
